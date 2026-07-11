@@ -15,68 +15,55 @@ async function fetchAlerts(KE) {
         hideLoadingSpinner();
         displayError(error.message);
     }
-
 }
 
 function displayAlerts(KE, data) {
     clearUI();
-    
-    const alertsList = document.getElementById("alerts-display");
-    const displayDiv = document.getElementById("alerts-count");
-    const summary = document.getElementById("summary");
+
+    const summary = document.getElementById("alerts-display");
+    const alertsList = document.getElementById("alerts-list");
 
     const count = data.features.length;
-    displayDiv.textContent = `Weather Alerts: ${count}`;
-    summary.textContent = `Current watches, warnings, and advisories for ${KE}: ${count}`;
+
+    summary.textContent = `Weather Alerts: ${count}`;
 
     data.features.forEach(alert => {
         const li = document.createElement("li");
         li.textContent = alert.properties.headline;
         alertsList.appendChild(li);
     });
-
-
 }
 
 function displayError(message) {
     const errorElement = document.getElementById("error-message");
     errorElement.textContent = message;
-    errorElement.classList.remove("hidden"); 
+    errorElement.classList.remove("hidden");
     errorElement.classList.add("error");
 }
 
 function clearUI() {
     document.getElementById("state-input").value = "";
-    const displayDiv = document.getElementById("alerts-display");
-    displayDiv.textContent = "";
-
+    document.getElementById("alerts-display").textContent = "";
+    document.getElementById("alerts-list").innerHTML = "";
     const errorElement = document.getElementById("error-message");
     errorElement.textContent = "";
-    errorElement.classList.remove("error");
     errorElement.classList.add("hidden");
-
-
+    errorElement.classList.remove("error");
+}
 
 function showLoadingSpinner() {
-    document.getElementById("spinner").style.display = "block";
+    document.getElementById("spinner").classList.remove("hidden");
 }
 
 function hideLoadingSpinner() {
-    document.getElementById("spinner").style.display = "none";
+    document.getElementById("spinner").classList.add("hidden");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const button = document.getElementById("fetch-alerts");
-    if (button) {
-        button.addEventListener("click", () => {
-            const stateInput = document.getElementById("state-input").value.trim();
-            if (!/^[A-Z]{2}$/.test(stateInput)) {
-                displayError("Please enter a valid two-letter state abbreviation.");
-                return;
-            }
-            fetchAlerts(stateInput);
-        });
+document.getElementById("fetch-alerts").addEventListener("click", () => {
+    const stateInput = document.getElementById("state-input").value.trim();
+    if (!/^[A-Z]{2}$/.test(stateInput)) {
+        displayError("Please enter a valid two-letter state abbreviation.");
+        return;
     }
+    fetchAlerts(stateInput);
 });
-
-module.exports = { fetchAlerts, displayAlerts, displayError, clearUI };
